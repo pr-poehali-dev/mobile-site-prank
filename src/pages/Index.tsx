@@ -17,7 +17,12 @@ const Index = () => {
     setAudioPlayed(true);
     
     const audio = new Audio(customAudioUrl);
-    audio.play().catch(err => console.error('Audio playback failed:', err));
+    audio.volume = 1.0;
+    
+    audio.play().catch(err => {
+      console.error('Audio playback failed:', err);
+      alert('Не удалось воспроизвести аудио. Проверьте, что звук не заблокирован браузером.');
+    });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
