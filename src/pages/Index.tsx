@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
@@ -11,18 +11,23 @@ const Index = () => {
   const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file');
   const [urlInput, setUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    audioRef.current = new Audio(customAudioUrl);
+    audioRef.current.volume = 1.0;
+    audioRef.current.load();
+  }, [customAudioUrl]);
 
   const handleContinue = () => {
+    if (audioRef.current) {
+      audioRef.current.play().catch(err => {
+        console.error('Audio playback failed:', err);
+      });
+    }
+    
     setShowModal(false);
     setAudioPlayed(true);
-    
-    const audio = new Audio(customAudioUrl);
-    audio.volume = 1.0;
-    
-    audio.play().catch(err => {
-      console.error('Audio playback failed:', err);
-      alert('Не удалось воспроизвести аудио. Проверьте, что звук не заблокирован браузером.');
-    });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
