@@ -6,7 +6,7 @@ import Icon from '@/components/ui/icon';
 const Index = () => {
   const [showModal, setShowModal] = useState(true);
   const [audioPlayed, setAudioPlayed] = useState(false);
-  const [customAudioUrl, setCustomAudioUrl] = useState('https://cdn.freesound.org/previews/442/442867_3797507-lq.mp3');
+  const [customAudioUrl, setCustomAudioUrl] = useState('https://rus.hitmotop.com/get/music/20241214/Ston_prank_-_Ston_prank_78732798.mp3');
   const [isEditing, setIsEditing] = useState(false);
   const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file');
   const [urlInput, setUrlInput] = useState('');
