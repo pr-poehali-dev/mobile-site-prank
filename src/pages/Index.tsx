@@ -8,6 +8,8 @@ const Index = () => {
   const [audioPlayed, setAudioPlayed] = useState(false);
   const [customAudioUrl, setCustomAudioUrl] = useState('https://cdn.freesound.org/previews/442/442867_3797507-lq.mp3');
   const [isEditing, setIsEditing] = useState(false);
+  const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file');
+  const [urlInput, setUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleContinue = () => {
@@ -30,6 +32,14 @@ const Index = () => {
   const handleResetPrank = () => {
     setShowModal(true);
     setAudioPlayed(false);
+  };
+
+  const handleUrlSubmit = () => {
+    if (urlInput.trim()) {
+      setCustomAudioUrl(urlInput.trim());
+      setUrlInput('');
+      setIsEditing(false);
+    }
   };
 
   return (
@@ -107,12 +117,26 @@ const Index = () => {
                     {!isEditing ? (
                       <div className="flex gap-3">
                         <Button
-                          onClick={() => setIsEditing(true)}
+                          onClick={() => {
+                            setIsEditing(true);
+                            setUploadMode('file');
+                          }}
                           variant="outline"
                           className="flex-1"
                         >
                           <Icon name="Upload" className="mr-2" size={18} />
-                          Загрузить свое аудио
+                          Загрузить файл
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setIsEditing(true);
+                            setUploadMode('url');
+                          }}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          <Icon name="Link" className="mr-2" size={18} />
+                          Ссылка
                         </Button>
                         <Button
                           onClick={handleResetPrank}
@@ -124,15 +148,46 @@ const Index = () => {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <Input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="audio/*"
-                          onChange={handleFileUpload}
-                          className="cursor-pointer"
-                        />
+                        {uploadMode === 'file' ? (
+                          <div className="space-y-2">
+                            <label className="text-sm text-gray-600 font-medium block">
+                              Выберите аудиофайл
+                            </label>
+                            <Input
+                              ref={fileInputRef}
+                              type="file"
+                              accept="audio/*"
+                              onChange={handleFileUpload}
+                              className="cursor-pointer"
+                            />
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <label className="text-sm text-gray-600 font-medium block">
+                              Вставьте ссылку на аудио
+                            </label>
+                            <div className="flex gap-2">
+                              <Input
+                                type="url"
+                                value={urlInput}
+                                onChange={(e) => setUrlInput(e.target.value)}
+                                placeholder="https://example.com/audio.mp3"
+                                className="flex-1"
+                              />
+                              <Button
+                                onClick={handleUrlSubmit}
+                                disabled={!urlInput.trim()}
+                              >
+                                <Icon name="Check" size={18} />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                         <Button
-                          onClick={() => setIsEditing(false)}
+                          onClick={() => {
+                            setIsEditing(false);
+                            setUrlInput('');
+                          }}
                           variant="ghost"
                           className="w-full"
                         >
@@ -144,7 +199,9 @@ const Index = () => {
                     <p className="text-sm text-gray-500">
                       {customAudioUrl.includes('blob:') 
                         ? '✓ Загружен пользовательский файл' 
-                        : '🔊 Используется звук по умолчанию'}
+                        : customAudioUrl.includes('freesound.org')
+                        ? '🔊 Используется звук по умолчанию'
+                        : '✓ Используется пользовательская ссылка'}
                     </p>
                   </div>
                 </div>
