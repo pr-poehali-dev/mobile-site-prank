@@ -1,16 +1,35 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [showModal, setShowModal] = useState(true);
   const [audioPlayed, setAudioPlayed] = useState(false);
+  const [customAudioUrl, setCustomAudioUrl] = useState('https://cdn.freesound.org/previews/442/442867_3797507-lq.mp3');
+  const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleContinue = () => {
     setShowModal(false);
     setAudioPlayed(true);
     
-    const audio = new Audio('https://cdn.freesound.org/previews/442/442867_3797507-lq.mp3');
-    audio.play();
+    const audio = new Audio(customAudioUrl);
+    audio.play().catch(err => console.error('Audio playback failed:', err));
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('audio/')) {
+      const url = URL.createObjectURL(file);
+      setCustomAudioUrl(url);
+      setIsEditing(false);
+    }
+  };
+
+  const handleResetPrank = () => {
+    setShowModal(true);
+    setAudioPlayed(false);
   };
 
   return (
@@ -77,6 +96,57 @@ const Index = () => {
                     <li>🔊 После нажатия кнопки запускается аудио-сюрприз</li>
                     <li>😄 Реакция — бесценна!</li>
                   </ul>
+                </div>
+
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 mt-8">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                    Настройки пранка
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {!isEditing ? (
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => setIsEditing(true)}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          <Icon name="Upload" className="mr-2" size={18} />
+                          Загрузить свое аудио
+                        </Button>
+                        <Button
+                          onClick={handleResetPrank}
+                          variant="outline"
+                        >
+                          <Icon name="RotateCcw" className="mr-2" size={18} />
+                          Тест
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <Input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="audio/*"
+                          onChange={handleFileUpload}
+                          className="cursor-pointer"
+                        />
+                        <Button
+                          onClick={() => setIsEditing(false)}
+                          variant="ghost"
+                          className="w-full"
+                        >
+                          Отмена
+                        </Button>
+                      </div>
+                    )}
+                    
+                    <p className="text-sm text-gray-500">
+                      {customAudioUrl.includes('blob:') 
+                        ? '✓ Загружен пользовательский файл' 
+                        : '🔊 Используется звук по умолчанию'}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
