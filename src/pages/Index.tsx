@@ -17,6 +17,25 @@ const Index = () => {
     audioRef.current = new Audio(customAudioUrl);
     audioRef.current.volume = 1.0;
     audioRef.current.load();
+    
+    const tryAutoplay = async () => {
+      try {
+        await audioRef.current?.play();
+        setShowModal(false);
+        setAudioPlayed(true);
+      } catch (err) {
+        console.log('Autoplay blocked, waiting for user interaction');
+      }
+    };
+    
+    const timer = setTimeout(tryAutoplay, 100);
+    
+    return () => {
+      clearTimeout(timer);
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
   }, [customAudioUrl]);
 
   const handleContinue = () => {
