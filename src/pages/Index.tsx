@@ -9,7 +9,7 @@ const Index = () => {
     setShowModal(false);
     setAudioPlayed(true);
     
-    const audio = new Audio('https://www.soundjay.com/human/sounds/cough-1.mp3');
+    const audio = new Audio('https://cdn.freesound.org/previews/442/442867_3797507-lq.mp3');
     audio.play();
   };
 
